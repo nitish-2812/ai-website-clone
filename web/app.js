@@ -203,12 +203,10 @@ function updateLogs(logs) {
 // ─── Preview ─────────────────────────────────────────────────
 
 function showPreview() {
-  const previewUrl = window.location.origin.includes('railway.app') 
-    ? window.location.origin 
-    : 'http://localhost:3456';
+  const previewUrl = `${API_BASE}/api/preview`;
 
   previewSection.style.display = 'block';
-  previewFrame.src = previewUrl;
+  previewFrame.src = `${previewUrl}?t=${Date.now()}`;
   previewLink.href = previewUrl;
 
   previewSection.scrollIntoView({ behavior: 'smooth' });
@@ -250,8 +248,8 @@ async function applyModification() {
       const modifiedPaths = data.files ? data.files.map(f => f.path) : [];
       await loadProjectFiles(modifiedPaths);
 
-      // Refresh live preview frame
-      previewFrame.src = previewFrame.src;
+      // Refresh live preview frame with cache-buster
+      previewFrame.src = `${API_BASE}/api/preview?t=${Date.now()}`;
     } else {
       modItem.classList.add('error');
       modItem.querySelector('.mod-status').textContent = '❌ Failed: ' + (data.error || 'Server error');

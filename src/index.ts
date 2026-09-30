@@ -164,6 +164,112 @@ app.get('/api/project-files', async (req, res) => {
   }
 });
 
+// GET /api/preview and GET /preview — Render the cloned website directly in the sandbox iframe
+app.get(['/api/preview', '/preview'], async (req, res) => {
+  const projectPath = currentPipeline?.getProjectPath() || path.join(__dirname, '..', 'output', 'generated-site');
+  const fsPromises = await import('fs/promises');
+
+  try {
+    // 1. Read globals.css for design tokens and variables
+    let cssContent = '';
+    try {
+      cssContent = await fsPromises.readFile(path.join(projectPath, 'src', 'app', 'globals.css'), 'utf-8');
+    } catch {}
+
+    // Clean @tailwind directives for browser CDN compatibility
+    const cleanCss = cssContent
+      .replace(/@tailwind\s+base;/g, '')
+      .replace(/@tailwind\s+components;/g, '')
+      .replace(/@tailwind\s+utilities;/g, '');
+
+    // 2. Read components from src/components
+    const componentsDir = path.join(projectPath, 'src', 'components');
+    let renderedHtml = '';
+    try {
+      const entries = await fsPromises.readdir(componentsDir);
+      for (const file of entries) {
+        if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
+          const compContent = await fsPromises.readFile(path.join(componentsDir, file), 'utf-8');
+          // Extract JSX inside return ( ... )
+          const returnMatch = compContent.match(/return\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*(\n|\}|$)/);
+          if (returnMatch && returnMatch[1]) {
+            let jsx = returnMatch[1];
+            // Convert className -> class
+            jsx = jsx.replace(/\bclassName=/g, 'class=');
+            // Convert style={{ background: '#...' }}
+            jsx = jsx.replace(/style=\{\{([^}]+)\}\}/g, (_, inner) => {
+              const styleRules = inner
+                .split(',')
+                .map((pair: string) => {
+                  const [k, v] = pair.split(':').map((s: string) => s?.trim());
+                  if (!k || !v) return '';
+                  const cssKey = k.replace(/([A-Z])/g, '-$1').toLowerCase();
+                  const cssVal = v.replace(/['"]/g, '');
+                  return `${cssKey}: ${cssVal}`;
+                })
+                .filter(Boolean)
+                .join('; ');
+              return `style="${styleRules}"`;
+            });
+            // Convert <Image ... src="..." /> -> <img ... />
+            jsx = jsx.replace(/<Image\s+/g, '<img ');
+            // Remove JSX comments
+            jsx = jsx.replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
+            // Simple string interpolation {foo} -> strip
+            jsx = jsx.replace(/\{['"]([^'"]+)['"]\}/g, '$1');
+
+            renderedHtml += `\n<!-- Section: ${file} -->\n${jsx}\n`;
+          }
+        }
+      }
+    } catch {}
+
+    if (!renderedHtml) {
+      return res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              body { background: #07090e; color: #94a3b8; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+              .card { background: #0f172a; border: 1px solid #1e293b; padding: 32px; border-radius: 12px; max-width: 480px; }
+              h3 { color: #f8fafc; margin-bottom: 8px; }
+              p { font-size: 14px; line-height: 1.5; color: #64748b; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h3>No Clone Available Yet</h3>
+              <p>Enter a public website URL above and click <strong>Launch AI Agent</strong> to generate and preview your clone here.</p>
+            </div>
+          </body>
+        </html>
+      `);
+    }
+
+    // Return the full responsive HTML document with Tailwind CDN and custom styles
+    const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sandbox Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    ${cleanCss}
+  </style>
+</head>
+<body style="background-color: var(--color-background, #ffffff); color: var(--color-text-primary, #0f172a); font-family: var(--font-body, system-ui, sans-serif); min-height: 100vh; margin: 0;">
+  ${renderedHtml}
+</body>
+</html>`;
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(fullHtml);
+  } catch (err: any) {
+    res.status(500).send(`Preview Error: ${err.message}`);
+  }
+});
+
 // GET /api/blueprint — Get the generated blueprint
 app.get('/api/blueprint', (req, res) => {
   const state = currentPipeline?.getState();
