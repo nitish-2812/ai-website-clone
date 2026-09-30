@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Website Cloner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">🤖</span>
+          <h1>AI Website Cloner</h1>
+        </div>
+        <div class="header-badge">
+          <span class="badge">AI Agent</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Clone Section -->
+      <section class="clone-section">
+        <div class="section-header">
+          <h2>Clone a Website</h2>
+          <p>Enter any public website URL and let the AI agent recreate its frontend</p>
+        </div>
+
+        <div class="url-input-group">
+          <div class="input-wrapper">
+            <span class="input-icon">🌐</span>
+            <input
+              type="url"
+              id="urlInput"
+              placeholder="https://example.com"
+              autocomplete="url"
+            />
+          </div>
+          <button id="cloneBtn" class="btn btn-primary">
+            <span class="btn-text">Clone Website</span>
+            <span class="btn-loading" style="display: none;">
+              <span class="spinner"></span>
+              Cloning...
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Pipeline Status -->
+      <section id="pipelineSection" class="pipeline-section" style="display: none;">
+        <div class="section-header">
+          <h2>Pipeline Progress</h2>
+        </div>
+
+        <div class="pipeline-stages" id="pipelineStages">
+          <div class="stage" data-stage="analysis">
+            <div class="stage-icon">📸</div>
+            <div class="stage-info">
+              <span class="stage-name">Website Analysis</span>
+              <span class="stage-desc">Screenshots, DOM, styles, assets</span>
+            </div>
+            <div class="stage-status">
+              <span class="status-badge pending">Pending</span>
+            </div>
+          </div>
+
+          <div class="stage-connector"></div>
+
+          <div class="stage" data-stage="blueprint">
+            <div class="stage-icon">🧠</div>
+            <div class="stage-info">
+              <span class="stage-name">AI Blueprint</span>
+              <span class="stage-desc">Vision analysis + structural understanding</span>
+            </div>
+            <div class="stage-status">
+              <span class="status-badge pending">Pending</span>
+            </div>
+          </div>
+
+          <div class="stage-connector"></div>
+
+          <div class="stage" data-stage="generation">
+            <div class="stage-icon">⚙️</div>
+            <div class="stage-info">
+              <span class="stage-name">Code Generation</span>
+              <span class="stage-desc">React/Next.js component generation</span>
+            </div>
+            <div class="stage-status">
+              <span class="status-badge pending">Pending</span>
+            </div>
+          </div>
+
+          <div class="stage-connector"></div>
+
+          <div class="stage" data-stage="validation">
+            <div class="stage-icon">🔄</div>
+            <div class="stage-info">
+              <span class="stage-name">Build Validation</span>
+              <span class="stage-desc">Self-healing error fixing loop</span>
+            </div>
+            <div class="stage-status">
+              <span class="status-badge pending">Pending</span>
+            </div>
+          </div>
+
+          <div class="stage-connector"></div>
+
+          <div class="stage" data-stage="preview">
+            <div class="stage-icon">👁️</div>
+            <div class="stage-info">
+              <span class="stage-name">Preview</span>
+              <span class="stage-desc">Local dev server running</span>
+            </div>
+            <div class="stage-status">
+              <span class="status-badge pending">Pending</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token Usage -->
+        <div class="token-usage" id="tokenUsage" style="display: none;">
+          <div class="usage-item">
+            <span class="usage-label">Input Tokens</span>
+            <span class="usage-value" id="inputTokens">0</span>
+          </div>
+          <div class="usage-item">
+            <span class="usage-label">Output Tokens</span>
+            <span class="usage-value" id="outputTokens">0</span>
+          </div>
+          <div class="usage-item">
+            <span class="usage-label">API Calls</span>
+            <span class="usage-value" id="apiCalls">0</span>
+          </div>
+          <div class="usage-item">
+            <span class="usage-label">Est. Cost</span>
+            <span class="usage-value cost" id="estCost">$0.00</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Preview Section -->
+      <section id="previewSection" class="preview-section" style="display: none;">
+        <div class="section-header">
+          <h2>Generated Website Preview</h2>
+          <a href="#" id="previewLink" target="_blank" class="btn btn-outline btn-sm">
+            Open in New Tab ↗
+          </a>
+        </div>
+        <div class="preview-frame-wrapper">
+          <div class="preview-toolbar">
+            <button class="toolbar-btn active" data-viewport="desktop" title="Desktop">🖥️</button>
+            <button class="toolbar-btn" data-viewport="tablet" title="Tablet">📱</button>
+            <button class="toolbar-btn" data-viewport="mobile" title="Mobile">📲</button>
+          </div>
+          <div class="preview-frame-container" id="previewContainer">
+            <iframe id="previewFrame" src="" frameborder="0"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modification Section -->
+      <section id="modifySection" class="modify-section" style="display: none;">
+        <div class="section-header">
+          <h2>Modify with AI</h2>
+          <p>Use natural language to modify the generated website</p>
+        </div>
+
+        <div class="modify-input-group">
+          <div class="input-wrapper">
+            <span class="input-icon">💬</span>
+            <input
+              type="text"
+              id="modifyInput"
+              placeholder='e.g., "Change the primary color to blue" or "Add a testimonials section"'
+            />
+          </div>
+          <button id="modifyBtn" class="btn btn-accent">
+            <span class="btn-text">Apply</span>
+            <span class="btn-loading" style="display: none;">
+              <span class="spinner"></span>
+              Applying...
+            </span>
+          </button>
+        </div>
+
+        <div class="modification-history" id="modHistory"></div>
+      </section>
+
+      <!-- Logs -->
+      <section id="logsSection" class="logs-section" style="display: none;">
+        <details>
+          <summary>Agent Logs</summary>
+          <pre id="logsContent"></pre>
+        </details>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>AI Website Cloner — Powered by GPT-4o / Claude</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
