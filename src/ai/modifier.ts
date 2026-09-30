@@ -77,7 +77,8 @@ Determine which files need modification.`,
   };
 
   try {
-    plan = JSON.parse(planJson);
+    const cleanedJson = planJson.replace(/```(?:json)?\n?/gi, '').replace(/```\n?/g, '').trim();
+    plan = JSON.parse(cleanedJson);
   } catch {
     // Fallback: modify the main page and globals.css
     plan = {
