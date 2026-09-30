@@ -1,5 +1,5 @@
 /**
- * AI Website Cloner — Web UI Client Script
+ * Synthetix AI Website Cloner — Client Script
  */
 
 const API_BASE = '';
@@ -10,7 +10,6 @@ let isCloning = false;
 
 const urlInput = document.getElementById('urlInput');
 const cloneBtn = document.getElementById('cloneBtn');
-const pipelineSection = document.getElementById('pipelineSection');
 const previewSection = document.getElementById('previewSection');
 const modifySection = document.getElementById('modifySection');
 const logsSection = document.getElementById('logsSection');
@@ -22,6 +21,24 @@ const previewContainer = document.getElementById('previewContainer');
 const logsContent = document.getElementById('logsContent');
 const modHistory = document.getElementById('modHistory');
 const tokenUsage = document.getElementById('tokenUsage');
+
+// ─── Preset Chips & Suggestions ──────────────────────────────
+
+document.querySelectorAll('.preset-chip').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    urlInput.value = chip.dataset.url;
+    urlInput.focus();
+    urlInput.classList.add('pulse-highlight');
+    setTimeout(() => urlInput.classList.remove('pulse-highlight'), 800);
+  });
+});
+
+document.querySelectorAll('.mod-chip').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    modifyInput.value = chip.dataset.prompt;
+    modifyInput.focus();
+  });
+});
 
 // ─── Event Listeners ─────────────────────────────────────────
 
@@ -54,7 +71,7 @@ document.querySelectorAll('.toolbar-btn').forEach((btn) => {
 async function startClone() {
   const url = urlInput.value.trim();
   if (!url || !url.startsWith('http')) {
-    urlInput.style.borderColor = '#ff7675';
+    urlInput.style.borderColor = '#f43f5e';
     urlInput.focus();
     setTimeout(() => { urlInput.style.borderColor = ''; }, 2000);
     return;
@@ -65,17 +82,26 @@ async function startClone() {
 
   // Update UI
   setBtnLoading(cloneBtn, true);
-  pipelineSection.style.display = 'block';
   previewSection.style.display = 'none';
   modifySection.style.display = 'none';
   logsSection.style.display = 'block';
-  tokenUsage.style.display = 'grid';
 
-  // Reset stages
-  document.querySelectorAll('.status-badge').forEach((badge) => {
+  // Reset pipeline cards
+  document.querySelectorAll('.pipeline-card').forEach((card) => {
+    card.classList.remove('active', 'completed');
+    const badge = card.querySelector('.status-badge');
     badge.className = 'status-badge pending';
     badge.textContent = 'Pending';
   });
+
+  // Activate first stage immediately
+  const firstCard = document.querySelector('[data-stage="analysis"]');
+  if (firstCard) {
+    firstCard.classList.add('active');
+    const b = firstCard.querySelector('.status-badge');
+    b.className = 'status-badge running';
+    b.textContent = 'Analyzing...';
+  }
 
   try {
     const response = await fetch(`${API_BASE}/api/clone`, {
@@ -87,7 +113,7 @@ async function startClone() {
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.error || 'Clone failed');
+      alert(data.error || 'Clone failed to initiate');
       setBtnLoading(cloneBtn, false);
       isCloning = false;
       return;
@@ -96,7 +122,7 @@ async function startClone() {
     // Start polling for status
     startPolling();
   } catch (err) {
-    alert(`Error: ${err.message}`);
+    alert(`Connection Error: ${err.message}`);
     setBtnLoading(cloneBtn, false);
     isCloning = false;
   }
@@ -130,7 +156,7 @@ function startPolling() {
     } catch (err) {
       console.error('Polling error:', err);
     }
-  }, 2000);
+  }, 1800);
 }
 
 function updatePipelineUI(data) {
@@ -142,18 +168,19 @@ function updatePipelineUI(data) {
 
     const badge = stageEl.querySelector('.status-badge');
     badge.className = `status-badge ${stage.status}`;
-    badge.textContent = stage.status.charAt(0).toUpperCase() + stage.status.slice(1);
+    badge.textContent = stage.status === 'running' ? 'Active' : stage.status.charAt(0).toUpperCase() + stage.status.slice(1);
 
     stageEl.classList.toggle('active', stage.status === 'running');
+    stageEl.classList.toggle('completed', stage.status === 'completed');
   });
 }
 
 function updateTokenUsage(usage) {
   if (!usage) return;
-  document.getElementById('inputTokens').textContent = usage.inputTokens.toLocaleString();
-  document.getElementById('outputTokens').textContent = usage.outputTokens.toLocaleString();
-  document.getElementById('apiCalls').textContent = usage.calls;
-  document.getElementById('estCost').textContent = usage.estimatedCost;
+  document.getElementById('inputTokens').textContent = (usage.inputTokens || 0).toLocaleString();
+  document.getElementById('outputTokens').textContent = (usage.outputTokens || 0).toLocaleString();
+  document.getElementById('apiCalls').textContent = usage.calls || 0;
+  document.getElementById('estCost').textContent = usage.estimatedCost || '$0.0000 (Free Tier)';
 }
 
 function updateLogs(logs) {
@@ -165,10 +192,15 @@ function updateLogs(logs) {
 // ─── Preview ─────────────────────────────────────────────────
 
 function showPreview() {
-  const previewUrl = 'http://localhost:3456';
+  const previewUrl = window.location.origin.includes('railway.app') 
+    ? window.location.origin 
+    : 'http://localhost:3456';
+
   previewSection.style.display = 'block';
   previewFrame.src = previewUrl;
   previewLink.href = previewUrl;
+
+  previewSection.scrollIntoView({ behavior: 'smooth' });
 }
 
 // ─── Modification ────────────────────────────────────────────
@@ -180,7 +212,6 @@ async function applyModification() {
   setBtnLoading(modifyBtn, true);
   modifyInput.disabled = true;
 
-  // Add to history (pending)
   const modItem = addModHistoryItem(instruction, 'pending');
 
   try {
@@ -193,16 +224,15 @@ async function applyModification() {
     const data = await response.json();
 
     if (response.ok) {
-      modItem.querySelector('.mod-status').textContent = '✅ Applied';
-      // Refresh preview
+      modItem.querySelector('.mod-status').textContent = '✅ Refactored';
       previewFrame.src = previewFrame.src;
     } else {
       modItem.classList.add('error');
-      modItem.querySelector('.mod-status').textContent = '❌ Failed';
+      modItem.querySelector('.mod-status').textContent = '❌ Failed: ' + (data.error || 'Server error');
     }
   } catch (err) {
     modItem.classList.add('error');
-    modItem.querySelector('.mod-status').textContent = '❌ Error';
+    modItem.querySelector('.mod-status').textContent = '❌ Network Error';
   }
 
   modifyInput.value = '';
@@ -210,7 +240,6 @@ async function applyModification() {
   modifyInput.focus();
   setBtnLoading(modifyBtn, false);
 
-  // Refresh token usage
   try {
     const statusRes = await fetch(`${API_BASE}/api/status`);
     const statusData = await statusRes.json();
@@ -220,11 +249,11 @@ async function applyModification() {
 
 function addModHistoryItem(text, status) {
   const item = document.createElement('div');
-  item.className = 'mod-item';
+  item.className = 'mod-history-item';
   item.innerHTML = `
     <span class="mod-icon">💬</span>
     <span class="mod-text">"${text}"</span>
-    <span class="mod-status">${status === 'pending' ? '⏳ Applying...' : status}</span>
+    <span class="mod-status">${status === 'pending' ? '⏳ Refactoring AST...' : status}</span>
   `;
   modHistory.prepend(item);
   return item;
@@ -241,7 +270,7 @@ function setBtnLoading(btn, loading) {
     loadingEl.style.display = 'inline-flex';
     btn.disabled = true;
   } else {
-    textEl.style.display = 'inline';
+    textEl.style.display = 'inline-flex';
     loadingEl.style.display = 'none';
     btn.disabled = false;
   }

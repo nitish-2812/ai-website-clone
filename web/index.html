@@ -3,208 +3,372 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Website Cloner</title>
+  <title>AI Website Cloner — Autonomous Frontend Re-Engineering Agent</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Ambient Background Glows -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
   <div class="app">
     <!-- Header -->
     <header class="header">
       <div class="header-content">
         <div class="logo">
-          <span class="logo-icon">🤖</span>
-          <h1>AI Website Cloner</h1>
+          <div class="logo-badge-icon">
+            <span class="logo-emoji">⚡</span>
+          </div>
+          <div class="logo-text">
+            <h1>Synthetix <span class="logo-highlight">AI Cloner</span></h1>
+            <span class="logo-subtitle">Autonomous Frontend Re-Engineering Agent</span>
+          </div>
         </div>
-        <div class="header-badge">
-          <span class="badge">AI Agent</span>
+        <div class="header-status">
+          <div class="status-pill">
+            <span class="status-dot pulse"></span>
+            <span class="status-label">Agent Engine: <strong>Gemini Vision 2.5 / Flash</strong></span>
+            <span class="status-tag">Free Tier $0.00</span>
+          </div>
+          <a href="https://github.com/nitish-2812/ai-website-clone" target="_blank" class="github-btn">
+            <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            <span>GitHub</span>
+          </a>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
     <main class="main">
-      <!-- Clone Section -->
-      <section class="clone-section">
-        <div class="section-header">
-          <h2>Clone a Website</h2>
-          <p>Enter any public website URL and let the AI agent recreate its frontend</p>
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="hero-badge">
+          <span class="badge-icon">🚀</span>
+          <span>Founding AI Engineer System Demo</span>
         </div>
+        <h2 class="hero-title">
+          Transform Any Website URL Into Clean
+          <span class="gradient-text">React & Next.js 14 Code</span>
+        </h2>
+        <p class="hero-desc">
+          Autonomous multi-modal agent that analyzes live websites via Playwright, extracts design tokens, 
+          generates architectural blueprints via Gemini Vision, compiles verified React components, and supports conversational modification.
+        </p>
 
-        <div class="url-input-group">
-          <div class="input-wrapper">
-            <span class="input-icon">🌐</span>
-            <input
-              type="url"
-              id="urlInput"
-              placeholder="https://example.com"
-              autocomplete="url"
-            />
-          </div>
-          <button id="cloneBtn" class="btn btn-primary">
-            <span class="btn-text">Clone Website</span>
-            <span class="btn-loading" style="display: none;">
-              <span class="spinner"></span>
-              Cloning...
-            </span>
-          </button>
-        </div>
-      </section>
-
-      <!-- Pipeline Status -->
-      <section id="pipelineSection" class="pipeline-section" style="display: none;">
-        <div class="section-header">
-          <h2>Pipeline Progress</h2>
-        </div>
-
-        <div class="pipeline-stages" id="pipelineStages">
-          <div class="stage" data-stage="analysis">
-            <div class="stage-icon">📸</div>
-            <div class="stage-info">
-              <span class="stage-name">Website Analysis</span>
-              <span class="stage-desc">Screenshots, DOM, styles, assets</span>
+        <!-- Clone Input Card -->
+        <div class="clone-card glass-panel">
+          <div class="url-input-group">
+            <div class="input-wrapper">
+              <span class="input-icon">🌐</span>
+              <input
+                type="url"
+                id="urlInput"
+                placeholder="Enter public URL (e.g. https://example.com or https://news.ycombinator.com)"
+                autocomplete="url"
+                value="https://example.com"
+              />
             </div>
-            <div class="stage-status">
-              <span class="status-badge pending">Pending</span>
-            </div>
+            <button id="cloneBtn" class="btn btn-primary glow-btn">
+              <span class="btn-text">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Launch AI Agent
+              </span>
+              <span class="btn-loading" style="display: none;">
+                <span class="spinner"></span>
+                Recreating UI...
+              </span>
+            </button>
           </div>
 
-          <div class="stage-connector"></div>
-
-          <div class="stage" data-stage="blueprint">
-            <div class="stage-icon">🧠</div>
-            <div class="stage-info">
-              <span class="stage-name">AI Blueprint</span>
-              <span class="stage-desc">Vision analysis + structural understanding</span>
+          <!-- Quick Presets -->
+          <div class="quick-presets">
+            <span class="presets-label">⚡ 1-Click Test Presets:</span>
+            <div class="preset-chips">
+              <button class="preset-chip" data-url="https://example.com">
+                <span class="chip-dot dot-cyan"></span>
+                Example.com (Simple Hero)
+              </button>
+              <button class="preset-chip" data-url="https://news.ycombinator.com">
+                <span class="chip-dot dot-orange"></span>
+                Hacker News (Dense Grid)
+              </button>
+              <button class="preset-chip" data-url="https://linear.app">
+                <span class="chip-dot dot-purple"></span>
+                Linear.app (SaaS Dark)
+              </button>
+              <button class="preset-chip" data-url="https://stripe.com">
+                <span class="chip-dot dot-blue"></span>
+                Stripe (Payment Landing)
+              </button>
             </div>
-            <div class="stage-status">
-              <span class="status-badge pending">Pending</span>
-            </div>
-          </div>
-
-          <div class="stage-connector"></div>
-
-          <div class="stage" data-stage="generation">
-            <div class="stage-icon">⚙️</div>
-            <div class="stage-info">
-              <span class="stage-name">Code Generation</span>
-              <span class="stage-desc">React/Next.js component generation</span>
-            </div>
-            <div class="stage-status">
-              <span class="status-badge pending">Pending</span>
-            </div>
-          </div>
-
-          <div class="stage-connector"></div>
-
-          <div class="stage" data-stage="validation">
-            <div class="stage-icon">🔄</div>
-            <div class="stage-info">
-              <span class="stage-name">Build Validation</span>
-              <span class="stage-desc">Self-healing error fixing loop</span>
-            </div>
-            <div class="stage-status">
-              <span class="status-badge pending">Pending</span>
-            </div>
-          </div>
-
-          <div class="stage-connector"></div>
-
-          <div class="stage" data-stage="preview">
-            <div class="stage-icon">👁️</div>
-            <div class="stage-info">
-              <span class="stage-name">Preview</span>
-              <span class="stage-desc">Local dev server running</span>
-            </div>
-            <div class="stage-status">
-              <span class="status-badge pending">Pending</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Token Usage -->
-        <div class="token-usage" id="tokenUsage" style="display: none;">
-          <div class="usage-item">
-            <span class="usage-label">Input Tokens</span>
-            <span class="usage-value" id="inputTokens">0</span>
-          </div>
-          <div class="usage-item">
-            <span class="usage-label">Output Tokens</span>
-            <span class="usage-value" id="outputTokens">0</span>
-          </div>
-          <div class="usage-item">
-            <span class="usage-label">API Calls</span>
-            <span class="usage-value" id="apiCalls">0</span>
-          </div>
-          <div class="usage-item">
-            <span class="usage-label">Est. Cost</span>
-            <span class="usage-value cost" id="estCost">$0.00</span>
           </div>
         </div>
       </section>
 
-      <!-- Preview Section -->
-      <section id="previewSection" class="preview-section" style="display: none;">
-        <div class="section-header">
-          <h2>Generated Website Preview</h2>
-          <a href="#" id="previewLink" target="_blank" class="btn btn-outline btn-sm">
-            Open in New Tab ↗
-          </a>
+      <!-- Interactive 5-Stage Architecture Pipeline -->
+      <section class="pipeline-showcase-section">
+        <div class="section-title-wrap">
+          <div class="sub-badge">SYSTEM ARCHITECTURE</div>
+          <h3 class="section-heading">Autonomous 5-Stage Re-Engineering Pipeline</h3>
+          <p class="section-subheading">Watch how the multi-modal agent breaks down unfamiliar interfaces into pixel-perfect code</p>
         </div>
+
+        <div class="pipeline-grid" id="pipelineStages">
+          <!-- Stage 1 -->
+          <div class="pipeline-card glass-panel" data-stage="analysis">
+            <div class="stage-step-tag">STAGE 01</div>
+            <div class="stage-icon-wrap icon-cyan">
+              <span>📸</span>
+            </div>
+            <h4 class="stage-title">Perception & Crawl</h4>
+            <p class="stage-detail">Headless Playwright takes multi-viewport snapshots, parses DOM tree, extracts computed CSS & asset URLs.</p>
+            <div class="stage-meta">
+              <span class="meta-tag">Playwright</span>
+              <span class="meta-tag">Cheerio</span>
+            </div>
+            <div class="stage-status-bar">
+              <span class="status-badge pending">Ready</span>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="pipeline-arrow">
+            <div class="pulse-line"></div>
+          </div>
+
+          <!-- Stage 2 -->
+          <div class="pipeline-card glass-panel" data-stage="blueprint">
+            <div class="stage-step-tag">STAGE 02</div>
+            <div class="stage-icon-wrap icon-purple">
+              <span>🧠</span>
+            </div>
+            <h4 class="stage-title">Vision & Blueprint IR</h4>
+            <p class="stage-detail">Gemini multimodal vision inspects spatial hierarchy, extracting design tokens, layout grids & JSON intermediate representation.</p>
+            <div class="stage-meta">
+              <span class="meta-tag">Gemini Vision</span>
+              <span class="meta-tag">Schema IR</span>
+            </div>
+            <div class="stage-status-bar">
+              <span class="status-badge pending">Ready</span>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="pipeline-arrow">
+            <div class="pulse-line"></div>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="pipeline-card glass-panel" data-stage="generation">
+            <div class="stage-step-tag">STAGE 03</div>
+            <div class="stage-icon-wrap icon-emerald">
+              <span>⚙️</span>
+            </div>
+            <h4 class="stage-title">Code Generation</h4>
+            <p class="stage-detail">Synthesizes modular React components, Next.js 14 App Router layout, typography scales, and Tailwind CSS utility classes.</p>
+            <div class="stage-meta">
+              <span class="meta-tag">Next.js 14</span>
+              <span class="meta-tag">Tailwind CSS</span>
+            </div>
+            <div class="stage-status-bar">
+              <span class="status-badge pending">Ready</span>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="pipeline-arrow">
+            <div class="pulse-line"></div>
+          </div>
+
+          <!-- Stage 4 -->
+          <div class="pipeline-card glass-panel" data-stage="validation">
+            <div class="stage-step-tag">STAGE 04</div>
+            <div class="stage-icon-wrap icon-amber">
+              <span>🛡️</span>
+            </div>
+            <h4 class="stage-title">Self-Healing Build</h4>
+            <p class="stage-detail">Executes compiler checks. If syntax or TypeScript mismatches occur, the agent auto-debugs and repairs the AST in a feedback loop.</p>
+            <div class="stage-meta">
+              <span class="meta-tag">Self-Healing</span>
+              <span class="meta-tag">AST Repair</span>
+            </div>
+            <div class="stage-status-bar">
+              <span class="status-badge pending">Ready</span>
+            </div>
+          </div>
+
+          <!-- Connector -->
+          <div class="pipeline-arrow">
+            <div class="pulse-line"></div>
+          </div>
+
+          <!-- Stage 5 -->
+          <div class="pipeline-card glass-panel" data-stage="preview">
+            <div class="stage-step-tag">STAGE 05</div>
+            <div class="stage-icon-wrap icon-rose">
+              <span>👁️</span>
+            </div>
+            <h4 class="stage-title">Preview & Modifier</h4>
+            <p class="stage-detail">Serves the live interactive preview with multi-viewport testing, plus natural-language prompt refactoring on the fly.</p>
+            <div class="stage-meta">
+              <span class="meta-tag">Hot Reload</span>
+              <span class="meta-tag">NL Modifier</span>
+            </div>
+            <div class="stage-status-bar">
+              <span class="status-badge pending">Ready</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Telemetry Bar -->
+        <div class="telemetry-bar glass-panel" id="tokenUsage">
+          <div class="telemetry-item">
+            <span class="tel-icon">📥</span>
+            <div>
+              <span class="tel-label">Input Tokens</span>
+              <span class="tel-val" id="inputTokens">6,465</span>
+            </div>
+          </div>
+          <div class="telemetry-divider"></div>
+          <div class="telemetry-item">
+            <span class="tel-icon">📤</span>
+            <div>
+              <span class="tel-label">Output Tokens</span>
+              <span class="tel-val" id="outputTokens">2,306</span>
+            </div>
+          </div>
+          <div class="telemetry-divider"></div>
+          <div class="telemetry-item">
+            <span class="tel-icon">⚡</span>
+            <div>
+              <span class="tel-label">Model Calls</span>
+              <span class="tel-val" id="apiCalls">4</span>
+            </div>
+          </div>
+          <div class="telemetry-divider"></div>
+          <div class="telemetry-item">
+            <span class="tel-icon">💰</span>
+            <div>
+              <span class="tel-label">Total Cost</span>
+              <span class="tel-val cost-free" id="estCost">$0.0000 (Free Tier)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Preview Section -->
+      <section id="previewSection" class="preview-section glass-panel" style="display: none;">
+        <div class="preview-header">
+          <div>
+            <h3 class="preview-title">🎨 Interactive Live Preview</h3>
+            <p class="preview-sub">Generated React / Next.js code running inside sandbox</p>
+          </div>
+          <div class="preview-controls">
+            <div class="viewport-buttons">
+              <button class="toolbar-btn active" data-viewport="desktop" title="Desktop 1200px">
+                <span>🖥️</span> Desktop
+              </button>
+              <button class="toolbar-btn" data-viewport="tablet" title="Tablet 768px">
+                <span>📱</span> Tablet
+              </button>
+              <button class="toolbar-btn" data-viewport="mobile" title="Mobile 375px">
+                <span>📲</span> Mobile
+              </button>
+            </div>
+            <a href="#" id="previewLink" target="_blank" class="btn btn-outline btn-sm">
+              <span>Open in New Tab</span> ↗
+            </a>
+          </div>
+        </div>
+
         <div class="preview-frame-wrapper">
-          <div class="preview-toolbar">
-            <button class="toolbar-btn active" data-viewport="desktop" title="Desktop">🖥️</button>
-            <button class="toolbar-btn" data-viewport="tablet" title="Tablet">📱</button>
-            <button class="toolbar-btn" data-viewport="mobile" title="Mobile">📲</button>
-          </div>
           <div class="preview-frame-container" id="previewContainer">
             <iframe id="previewFrame" src="" frameborder="0"></iframe>
           </div>
         </div>
       </section>
 
-      <!-- Modification Section -->
-      <section id="modifySection" class="modify-section" style="display: none;">
-        <div class="section-header">
-          <h2>Modify with AI</h2>
-          <p>Use natural language to modify the generated website</p>
+      <!-- Natural Language Modification Section -->
+      <section id="modifySection" class="modify-section glass-panel" style="display: none;">
+        <div class="section-title-wrap text-left">
+          <div class="sub-badge">CONVERSATIONAL REFACTORING</div>
+          <h3 class="section-heading">Modify Generated Frontend with AI</h3>
+          <p class="section-subheading">Type any natural-language change to dynamically restyle, add sections, or modify components</p>
         </div>
 
         <div class="modify-input-group">
           <div class="input-wrapper">
-            <span class="input-icon">💬</span>
+            <span class="input-icon">✨</span>
             <input
               type="text"
               id="modifyInput"
-              placeholder='e.g., "Change the primary color to blue" or "Add a testimonials section"'
+              placeholder='e.g., "Change the background to dark slate and make the button cyan" or "Add a 3-tier pricing table"'
             />
           </div>
-          <button id="modifyBtn" class="btn btn-accent">
-            <span class="btn-text">Apply</span>
+          <button id="modifyBtn" class="btn btn-accent glow-btn">
+            <span class="btn-text">Apply Prompt</span>
             <span class="btn-loading" style="display: none;">
               <span class="spinner"></span>
-              Applying...
+              Refactoring...
             </span>
+          </button>
+        </div>
+
+        <!-- Quick Modifier Ideas -->
+        <div class="quick-mod-ideas">
+          <span class="mod-label">💡 Suggested Prompt Tests:</span>
+          <button class="mod-chip" data-prompt="Change the theme to a sleek cyberpunk dark mode with cyan and neon pink accents">
+            Cyberpunk Dark Theme
+          </button>
+          <button class="mod-chip" data-prompt="Add a glassmorphic floating navigation bar at the top">
+            Floating Glass Nav
+          </button>
+          <button class="mod-chip" data-prompt="Make the hero buttons rounded with glowing gradients">
+            Glow Gradient Buttons
+          </button>
+          <button class="mod-chip" data-prompt="Add a responsive FAQ section with collapsible questions">
+            FAQ Section
           </button>
         </div>
 
         <div class="modification-history" id="modHistory"></div>
       </section>
 
-      <!-- Logs -->
-      <section id="logsSection" class="logs-section" style="display: none;">
-        <details>
-          <summary>Agent Logs</summary>
-          <pre id="logsContent"></pre>
+      <!-- Live Agent Terminal Logs -->
+      <section id="logsSection" class="logs-section glass-panel">
+        <details open>
+          <summary>
+            <div class="summary-title">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+              <span>Agent Execution Stream & Telemetry</span>
+            </div>
+            <span class="summary-status">Live Stream</span>
+          </summary>
+          <pre id="logsContent">Agent ready. Select a preset or enter a public website URL to begin autonomous extraction and synthesis.</pre>
         </details>
       </section>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-      <p>AI Website Cloner — Powered by GPT-4o / Claude</p>
+      <div class="footer-content">
+        <p>Built for the <strong>Founding AI Engineer Assignment</strong> — Powered by Google Gemini Vision & Playwright</p>
+        <div class="footer-links">
+          <a href="https://github.com/nitish-2812/ai-website-clone" target="_blank">Repository</a>
+          <span>•</span>
+          <a href="https://aistudio.google.com" target="_blank">Google AI Studio</a>
+        </div>
+      </div>
     </footer>
   </div>
 
