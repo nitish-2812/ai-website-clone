@@ -184,47 +184,32 @@ app.get(['/api/preview', '/preview'], async (req, res) => {
 
     // 2. Read components from src/components
     const componentsDir = path.join(projectPath, 'src', 'components');
-    let renderedHtml = '';
+    const compFunctions: string[] = [];
+    const compTagNames: string[] = [];
+
     try {
       const entries = await fsPromises.readdir(componentsDir);
       for (const file of entries) {
         if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
-          const compContent = await fsPromises.readFile(path.join(componentsDir, file), 'utf-8');
-          // Extract JSX inside return ( ... )
-          const returnMatch = compContent.match(/return\s*\(\s*([\s\S]*?)\s*\)\s*;?\s*(\n|\}|$)/);
-          if (returnMatch && returnMatch[1]) {
-            let jsx = returnMatch[1];
-            // Convert className -> class
-            jsx = jsx.replace(/\bclassName=/g, 'class=');
-            // Convert style={{ background: '#...' }}
-            jsx = jsx.replace(/style=\{\{([^}]+)\}\}/g, (_, inner) => {
-              const styleRules = inner
-                .split(',')
-                .map((pair: string) => {
-                  const [k, v] = pair.split(':').map((s: string) => s?.trim());
-                  if (!k || !v) return '';
-                  const cssKey = k.replace(/([A-Z])/g, '-$1').toLowerCase();
-                  const cssVal = v.replace(/['"]/g, '');
-                  return `${cssKey}: ${cssVal}`;
-                })
-                .filter(Boolean)
-                .join('; ');
-              return `style="${styleRules}"`;
-            });
-            // Convert <Image ... src="..." /> -> <img ... />
-            jsx = jsx.replace(/<Image\s+/g, '<img ');
-            // Remove JSX comments
-            jsx = jsx.replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
-            // Simple string interpolation {foo} -> strip
-            jsx = jsx.replace(/\{['"]([^'"]+)['"]\}/g, '$1');
+          let code = await fsPromises.readFile(path.join(componentsDir, file), 'utf-8');
+          // Strip imports and 'use client'
+          code = code
+            .replace(/['"]use client['"];?/g, '')
+            .replace(/import\s+[\s\S]*?from\s+['"][^'"]+['"];?/g, '')
+            .replace(/export\s+default\s+function\s+([A-Za-z0-9_]+)/g, 'function $1')
+            .replace(/export\s+function\s+([A-Za-z0-9_]+)/g, 'function $1')
+            .replace(/<Image\s+/g, '<img ');
 
-            renderedHtml += `\n<!-- Section: ${file} -->\n${jsx}\n`;
+          const funcNameMatch = code.match(/function\s+([A-Za-z0-9_]+)/);
+          if (funcNameMatch) {
+            compTagNames.push(funcNameMatch[1]);
+            compFunctions.push(code);
           }
         }
       }
     } catch {}
 
-    if (!renderedHtml) {
+    if (compFunctions.length === 0) {
       return res.send(`
         <!DOCTYPE html>
         <html>
@@ -246,7 +231,7 @@ app.get(['/api/preview', '/preview'], async (req, res) => {
       `);
     }
 
-    // Return the full responsive HTML document with Tailwind CDN and custom styles
+    // Return the full responsive HTML document with React + Babel Standalone + Tailwind
     const fullHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -254,12 +239,30 @@ app.get(['/api/preview', '/preview'], async (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sandbox Preview</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     ${cleanCss}
   </style>
 </head>
 <body style="background-color: var(--color-background, #ffffff); color: var(--color-text-primary, #0f172a); font-family: var(--font-body, system-ui, sans-serif); min-height: 100vh; margin: 0;">
-  ${renderedHtml}
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    ${compFunctions.join('\n\n')}
+
+    function App() {
+      return (
+        <main className="w-full min-h-screen">
+          ${compTagNames.map(tag => `<${tag} />`).join('\n          ')}
+        </main>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
 </body>
 </html>`;
 
