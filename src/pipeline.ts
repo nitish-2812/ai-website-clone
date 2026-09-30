@@ -22,6 +22,7 @@ import {
   WebsiteBlueprint,
   GenerationResult,
   PipelineState,
+  ModificationResult,
 } from './types/blueprint.js';
 import fs from 'fs/promises';
 import path from 'path';
@@ -244,7 +245,7 @@ export class ClonePipeline {
   /**
    * Modify the generated project using natural language
    */
-  async modify(instruction: string): Promise<void> {
+  async modify(instruction: string): Promise<ModificationResult> {
     if (!this.state.generation) {
       throw new Error('Code must be generated before modification');
     }
@@ -260,6 +261,7 @@ export class ClonePipeline {
     // Fast hot-reload modification (Next.js automatically compiles changed files)
     result.buildSuccess = true;
     console.log('  ✓ Files updated — Next.js hot-reload active');
+    return result;
   }
 
   /**

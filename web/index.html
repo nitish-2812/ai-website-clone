@@ -342,6 +342,31 @@
         <div class="modification-history" id="modHistory"></div>
       </section>
 
+      <!-- Generated Code & Diff Inspector -->
+      <section id="codeInspectorSection" class="code-inspector-section glass-panel">
+        <div class="inspector-header">
+          <div class="inspector-title-wrap">
+            <div class="sub-badge">CODEBASE & DIFF INSPECTOR</div>
+            <h3 class="section-heading">Generated Next.js Components & Styling</h3>
+            <p class="section-subheading">Inspect the React components, Tailwind classes, and source files refactored by the AI agent</p>
+          </div>
+          <button id="refreshFilesBtn" class="btn btn-outline btn-sm">
+            <span>🔄 Load Code</span>
+          </button>
+        </div>
+
+        <div class="code-viewer-container">
+          <div class="file-tabs" id="fileTabs"></div>
+          <div class="file-code-display">
+            <div class="code-header">
+              <span id="activeFileName" class="active-file-name">Select a file</span>
+              <button id="copyCodeBtn" class="btn-copy">📋 Copy Code</button>
+            </div>
+            <pre><code id="activeFileCode">// Click 'Load Code' or complete a clone to view generated source files.</code></pre>
+          </div>
+        </div>
+      </section>
+
       <!-- Live Agent Terminal Logs -->
       <section id="logsSection" class="logs-section glass-panel">
         <details open>

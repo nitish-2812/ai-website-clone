@@ -290,6 +290,7 @@ export interface ModificationResult {
     changeDescription: string;
   }>;
   explanation: string;
+  plan?: string;
   buildSuccess: boolean;
 }
 

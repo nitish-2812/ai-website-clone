@@ -192,7 +192,8 @@ Create the complete file content following the same patterns as existing files.`
 
   return {
     modifiedFiles,
-    explanation: plan.plan,
+    plan: plan.plan,
+    explanation: plan.reasoning || plan.plan,
     buildSuccess: false, // caller should re-validate
   };
 }

@@ -112,11 +112,54 @@ app.post('/api/modify', async (req, res) => {
   log(`Modifying: "${instruction}"`);
 
   try {
-    await currentPipeline.modify(instruction);
-    log('Modification applied successfully');
-    res.json({ status: 'success', message: 'Modification applied' });
+    const result = await currentPipeline.modify(instruction);
+    log(`Modification applied: ${result.modifiedFiles.length} file(s) updated`);
+    res.json({
+      status: 'success',
+      message: 'Modification applied',
+      plan: result.plan,
+      files: result.modifiedFiles,
+      explanation: result.explanation,
+    });
   } catch (err: any) {
     log(`Modification failed: ${err.message}`);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/project-files — Return all generated component & style files
+app.get('/api/project-files', async (req, res) => {
+  const projectPath = currentPipeline?.getProjectPath() || path.join(__dirname, '..', 'output', 'generated-site');
+  try {
+    const fsPromises = await import('fs/promises');
+    const files: Array<{ path: string; content: string }> = [];
+
+    async function walk(dir: string) {
+      try {
+        const entries = await fsPromises.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          const relativePath = path.relative(projectPath, fullPath).replace(/\\/g, '/');
+          if (entry.isDirectory()) {
+            if (!['node_modules', '.next', '.git'].includes(entry.name)) {
+              await walk(fullPath);
+            }
+          } else if (
+            entry.name.endsWith('.tsx') ||
+            entry.name.endsWith('.ts') ||
+            entry.name.endsWith('.css') ||
+            entry.name.endsWith('.json')
+          ) {
+            const content = await fsPromises.readFile(fullPath, 'utf-8');
+            files.push({ path: relativePath, content });
+          }
+        }
+      } catch {}
+    }
+
+    await walk(projectPath);
+    res.json({ files });
+  } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
